@@ -5,7 +5,6 @@ from mpl_toolkits.mplot3d import Axes3D
 import networkx as nx
 import matplotlib.patheffects as path_effects
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
-#import rpy2.robjects as robjects
 import scipy.stats as stats
 from scipy.stats import gaussian_kde
 
@@ -38,6 +37,7 @@ adj_JU.columns = range(1, len(adj_JU.index) + 1)
 
 cols = ['steelblue', 'darksalmon', 'mediumseagreen']
 
+# Set random seed for reproducability
 np.random.seed(1)
 
 # Defining networkx graph objects for the multilayer networks 
@@ -50,13 +50,14 @@ G_WR = nx.from_pandas_adjacency(adj_WR)
 G_AW = nx.from_pandas_adjacency(adj_AW)
 G_JU = nx.from_pandas_adjacency(adj_JU)
 
-
+# Define network node positions
 pos_MN = nx.spring_layout(G_MN) 
 pos_PC = nx.spring_layout(G_PC) 
 pos_WR = nx.spring_layout(G_WR) 
 pos_AW = nx.spring_layout(G_AW) 
 pos_JU = nx.spring_layout(G_JU) 
 
+# Change between considered networks
 graphs = [G_WR, G_AW, G_JU]
 #graphs = [G_SN]
 #graphs = [G_WR, G_AW, G_JU]
@@ -65,6 +66,7 @@ graphs = [G_WR, G_AW, G_JU]
 graph_names = ["Wiretap Records", "Arrest Warrants", "Judgments"]
 
 
+# Plotting features
 w = 10
 h = 8
 
