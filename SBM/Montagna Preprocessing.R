@@ -36,6 +36,7 @@ adj_B <- adj_B[order(as.numeric(rownames(adj_B))), order(as.numeric(colnames(adj
 MN <- as.matrix(adj_A)
 PC <- as.matrix(adj_B)
 
+# Ensure symmetry by making links for those either in upper triangular or lower triangular part of matrix
 MN_sym <- MN | t(MN)
 MN_num <- as.numeric(MN_sym)
 MN <- matrix(MN_num, nrow = nrow(MN_sym), ncol = ncol(MN_sym))
@@ -46,6 +47,7 @@ PC_num <- as.numeric(PC_sym)
 PC <- matrix(PC_num, nrow = nrow(PC_sym), ncol = ncol(PC_sym))
 isSymmetric(PC)
 
+# Graphical visualizations
 heatmap(MN, 
         col = colorRampPalette(c("white", "black"))(256),  # Choose a color palette
         scale = "none",  # Use "none" to scale the colors
@@ -60,14 +62,14 @@ heatmap(PC,
         labRow = "", labCol = "",
         main = "Adjacency Matrix of PC")
 
-
+# Save output
 write.csv(MN, file="Adjacency matrices/adj_MN.csv", row.names = FALSE)
 write.csv(PC, file="Adjacency matrices/adj_PC.csv", row.names = FALSE)
 
 save(MN,file="Adjacency matrices/adj_MN.RData")
 save(PC,file="Adjacency matrices/adj_PC.RData")
 
-### Find common nodes
+### Find common nodes for subgraph creation
 common_MN_PC <- intersect(persons_A, persons_B)
 G_MN <- graph_from_adjacency_matrix(MN, mode = "undirected", diag = FALSE)
 G_PC <- graph_from_adjacency_matrix(PC, mode = "undirected", diag = FALSE)
@@ -116,83 +118,4 @@ length(table(Louv_PC))
 # Plot communities
 plot(lou_MN,net_MN,vertex.label = NA)
 plot(lou_PC,net_PC,vertex.label = NA)
-
-
-Y <- adj_MN_num
-
-
-# ------------------------------------
-# DIRICHLET MULTINOMIAL
-# ------------------------------------
-sigma_dm <- 0   
-H_dm <- 50 # Conservative upper bound 
-beta_dm <- 12/H_dm 
-round(expected_cl_py(V, sigma = sigma_dm, theta = beta_dm*H_dm, H = H_dm))
-
-
-
-N_iter <- 50000
-V <- dim(Y)[1]
-my_seed <- 1
-my_z <- c(1:V)
-
-# ------------------------------------
-# DIRICHLET MULTINOMIAL
-# ------------------------------------
-
-my_prior <- "DM"
-Z_DM <- esbm(Y, my_seed, N_iter, my_prior, my_z, a = 1, b = 1, beta_DM = 12/50, H_DM = 50)
-
-
-
-
-set.seed(1)
-index_traceplot <- sample(c(1:(V*(V-1)/2)),1)
-
-set.seed(1)
-V <- dim(Y)[1]
-burn_in <- 10000
-a <- b <- 1
-LL <- matrix(nrow=V*(V-1)/2,ncol=40000)
-
-# ------------------------------------
-# DIRICHLET MULTINOMIAL UNSUPERVISED
-# ------------------------------------
-Z_DM_WAIC <- Z_DM[,(burn_in+1):N_iter]
-
-
-for (t in 1:dim(Z_DM_WAIC)[2]){
-  LL[,t]<-sampleLL(Z_DM_WAIC[,t],Y,a,b)
-  if (t%%10000 == 0){print(paste("Iteration:", t))}
-}
-WAIC(LL)$WAIC
-# Selected traceplot
-plot(ts(LL[index_traceplot,]),xlab="",ylab="",ylim=c(-4,0))
-
-
-
-# ------------------------------------
-# DIRICHLET MULTINOMIAL
-# ------------------------------------
-quantile(apply(Z_DM[,(burn_in+1):N_iter],2,max))[c(2:4)]
-
-
-
-
-# ------------------------------------
-# DIRICHLET MULTINOMIAL
-# ------------------------------------
-
-c_Z_DM <- pr_cc(Z_DM[,(burn_in+1):N_iter])
-
-# point estimate
-memb_Z_DM_VI <- minVI(c_Z_DM,method="avg",max.k=20)
-memb_Z_DM <- memb_Z_DM_VI$cl
-
-# horizontal bound of the credible ball
-credibleball(memb_Z_DM_VI$cl,t(Z_DM[,(burn_in+1):N_iter]))[[5]]
-
-# misclassification error [in-sample for edges]
-misclass(memb_Z_DM,Y,a=1,b=1)
-
 
