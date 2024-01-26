@@ -7,4 +7,4 @@ The structure of files and folders are kept in such a way, that each script shou
 Within the SBM folder, the implementation and scripts used for the different SBM models with a variety of priors are included in the Source sub-folder. Much of the esbm.R file stems from the code supplied by "ESBM: Extended stochastic block models" from danieldurante on GitHub. A licence for the free use of and allowance for editing can be found within the SBM folder. Extensions have been made to the code for the SBM on multilayer networks and for performing link prediction and subsequent performance assessment. 
 
 ### HM-LDM
-The code builds upon the work made in "Hybrid-Membership Latent Distance Model (HM-LDM)" available on Nicknakis Github. 
+The code builds upon the work made in "Hybrid-Membership Latent Distance Model (HM-LDM)" available on Nicknakis Github. It uses the functions and methods implemented by Nicknakis, but the evaluation, assessment and outputs have been modified and changed to fit the purpose of the thesis with the considered network datasets. 
