@@ -1,4 +1,4 @@
-# Load the igraph and poweRlaw libraries
+# Load libraries
 library(igraph)
 library(poweRlaw)
 
